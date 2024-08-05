@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="background" id="background"></div>
+    <div class="container content">
+        <h1>Welcome to the Schedule Planner</h1>
+        <p>Instructions to use the app:</p>
+        <ul>
+            <li>Click on "Start Planning" to start organizing your time</li>
+            <li>Fill in the form and click on "Generate Schedule"</li>
+            <li>View a generated schedule that optimally balances your tasks and breaks</li>
+            <li>There's options to download the schedule as a PDF or Excel file</li>
+            <li><strong>Schedule Planner is completely free to use</strong></li>
+        </ul>
+
+        <a href="{{ url_for('input') }}" class="back-button">Start Planning</a>
+        <div class="toggle-dark-mode">
+            <span>Dark Mode</span>
+            <button onclick="toggleDarkMode()"></button>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
+    <script>
+        const background = document.getElementById('background');
+        const elementQuantity = 6;
+        const minSpeed = 6;
+        const maxSpeed = 14;
+
+        function createElement(type) {
+            const element = document.createElement('div');
+            element.classList.add(type);
+
+            const size = Math.random() * 40 + 40;
+            const positionX = Math.random() * 120;
+            const duration = Math.random() * (maxSpeed - minSpeed) + minSpeed;
+            const side = Math.random() > 0.5 ? 'Left' : 'Right'; 
+
+            element.style.width = `${size}px`;
+            element.style.height = `${size}px`;
+            element.style.left = `${positionX}vw`;
+            element.style.animationDuration = `${duration}s`;
+            element.style.animationName = `float${side}`;
+
+            if (type === 'calendar') {
+                const day = Math.floor(Math.random() * 31) + 1;
+                const month = Math.floor(Math.random() * 12) + 1;
+                element.innerHTML = `${day}/${month}`;
+            } else if (type === 'clock') {
+                const hours = Math.floor(Math.random() * 24).toString().padStart(2, '0');
+                const minutes = Math.floor(Math.random() * 60).toString().padStart(2, '0');
+                element.innerHTML = `${hours}:${minutes}`;
+            }
+
+            background.appendChild(element);
+
+            setTimeout(() => {
+                background.removeChild(element);
+            }, duration * 1000);
+        }
+
+        function generateElements() {
+            setInterval(() => {
+                for (let i = 0; i < elementQuantity; i++) {
+                    createElement('calendar');
+                    createElement('clock');
+                }
+            }, 500);
+        }
+
+        generateElements();
+    </script>
+</body>
+<footer>
+    <p>Made with ❤️ by <a href="https://ko-fi.com/maenderany" target="_blank"><strong>Maen Derany</strong></a></p>
+</footer>
+</html>

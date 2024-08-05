@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Schedule</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+</head>
+<body>
+    <div class="container2">
+        <h1>{{ schedule_name }}</h1>
+        <div id="calendar"></div>
+        <div class="button-container">
+            <button onclick="exportPDF()">Export to PDF</button><br><br>
+            <button onclick="exportXLSX()">Export to XLSX</button>
+        </div>
+        <a href="/input" class="back-button">Back to Input Page</a>
+
+        <div class="toggle-dark-mode">
+            <span>Dark Mode</span>
+            <button onclick="toggleDarkMode()"></button>
+        </div>
+    </div>
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <!-- jsPDF JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- SheetJS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- The next script block handles the functionality for exporting the schedule to PDF and XLSX formats, using the jsPDF and SheetJS libraries respectively. 
+    It processes the event data to create structured tables and ensures proper formatting and headers for the exported files. -->
+
+    <script>
+        const scheduleData = JSON.parse('{{ schedule | tojson | safe }}');
+        const events = scheduleData.events
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: events
+            });
+            calendar.render();
+        });
+
+        const scheduleName = document.querySelector('h1').textContent.trim();
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const { autoTable } = window.jspdf;
+            const doc = new jsPDF();
+
+            const events = {{ schedule['events'] | tojson | safe }};
+
+            doc.text(`Schedule: ${scheduleName}`, 10, 10);
+
+            const columns = [
+                { header: 'Date', dataKey: 'date' },
+                { header: 'Event', dataKey: 'event' },
+                { header: 'Start Time', dataKey: 'start' },
+                { header: 'End Time', dataKey: 'end' }
+            ];
+
+            function getDayName(date) {
+                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                return daysOfWeek[date.getDay()];
+            }
+
+            const data = [];
+            let lastDate = '';
+            let breakCounter = 1; 
+
+            events.forEach((event, index) => {
+                const startDate = new Date(event.start);
+                const endDate = new Date(event.end);
+                const formattedDate = `${startDate.getFullYear()}-${('0' + (startDate.getMonth() + 1)).slice(-2)}-${('0' + startDate.getDate()).slice(-2)}`;
+                const dayName = getDayName(startDate);
+
+                if (formattedDate !== lastDate) {
+                    if (lastDate !== '') {
+                        data.push({
+                            date: `${dayName}: ${formattedDate}`,
+                            isHeader: true 
+                        });
+                    } else {
+                        data.push({
+                            date: `${dayName}: ${formattedDate}`,
+                            isHeader: true 
+                        });
+                    }
+                    breakCounter = 1; 
+                }
+
+                data.push({
+                    date: '',
+                    event: event.className === 'task-event' ? event.title || 'Task' : `Break ${breakCounter}`,
+                    start: `${('0' + startDate.getHours()).slice(-2)}:${('0' + startDate.getMinutes()).slice(-2)}`,
+                    end: `${('0' + endDate.getHours()).slice(-2)}:${('0' + endDate.getMinutes()).slice(-2)}`,
+                    isHeader: false
+                });
+
+                lastDate = formattedDate;
+                
+                if (event.className !== 'task-event') {
+                    breakCounter++;
+                }
+            });
+
+            doc.autoTable({
+                head: [columns.map(col => col.header)], 
+                body: data.map(row => [row.date, row.event, row.start, row.end]), 
+                startY: 30,
+                margin: { left: 10, right: 10 },
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 2,
+                    overflow: 'linebreak'
+                },
+                headStyles: {
+                    fillColor: [22, 160, 133]
+                },
+                alternateRowStyles: {
+                    fillColor: [240, 240, 240]
+                },
+                columnStyles: {
+                    0: {
+                        fontStyle: 'bold' 
+                    }
+                },
+                didDrawCell: function (data) {
+                    if (data.row.raw.isHeader) {
+                        doc.setFontSize(12); 
+                        doc.setFont('helvetica', 'bold'); 
+                        doc.setTextColor(0, 0, 0);
+        
+                        const pageWidth = doc.internal.pageSize.width;
+                        const textWidth = doc.getTextWidth(data.cell.text);
+                        const xPosition = (pageWidth - textWidth) / 2;
+                        
+                        doc.text(data.cell.text, xPosition, data.cell.y + data.cell.height / 2, { align: 'center' });
+                    }
+                }
+            });
+            doc.save(`${scheduleName}_schedule.pdf`);
+        }
+
+
+        function exportXLSX() {
+            const events = {{ schedule['events'] | tojson | safe }};
+
+            function getDayName(date) {
+                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                return daysOfWeek[date.getDay()];
+            }
+    
+            const data = [];
+            let lastDate = '';
+            let breakCounter = 1;
+
+            data.push({ Date: `Schedule: ${scheduleName}`, Event: '', Start_Time: '', End_Time: '' });
+            data.push({ Date: 'Date', Event: 'Event', Start_Time: 'Start Time', End_Time: 'End Time' });
+
+            events.forEach((event, index) => {
+                const startDate = new Date(event.start);
+                const endDate = new Date(event.end);
+                const formattedDate = `${startDate.getFullYear()}-${('0' + (startDate.getMonth() + 1)).slice(-2)}-${('0' + startDate.getDate()).slice(-2)}`;
+                const dayName = getDayName(startDate);
+
+                if (formattedDate !== lastDate) {
+                    if (lastDate !== '') {
+                        data.push({
+                            Date: `${dayName}: ${formattedDate}`,
+                            Event: '',
+                            Start_Time: '',
+                            End_Time: ''
+                        });
+                    } else {
+                        data.push({
+                            Date: `${dayName}: ${formattedDate}`,
+                            Event: '',
+                            Start_Time: '',
+                            End_Time: ''
+                        });
+                    }
+                    breakCounter = 1; 
+                }
+
+                data.push({
+                    Date: '',
+                    Event: event.className === 'task-event' ? event.title || 'Task' : `Break ${breakCounter}`,
+                    Start_Time: `${('0' + startDate.getHours()).slice(-2)}:${('0' + startDate.getMinutes()).slice(-2)}`,
+                    End_Time: `${('0' + endDate.getHours()).slice(-2)}:${('0' + endDate.getMinutes()).slice(-2)}`
+                });
+
+                lastDate = formattedDate;
+                
+                if (event.className !== 'task-event') {
+                    breakCounter++;
+                }
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true });
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedule');
+
+            XLSX.writeFile(workbook, `${scheduleName}_schedule.xlsx`);
+        }
+    </script>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
+</body>
+<footer>
+    <p>Made with ❤️ by <a href="https://ko-fi.com/maenderany" target="_blank"><strong>Maen Derany</strong></a></p>
+</footer>
+</html>

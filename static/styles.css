@@ -1,0 +1,454 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+/* Reset some basic elements */
+body, h1, p, form, input, select, button, textarea {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Basic styling for the body */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #212529;
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* Container styling */
+.container {
+    max-width: 600px;
+    width: 100%;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+}
+
+.container2 {
+    width: 100%;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+}
+
+/* Styling for headings */
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #343a40;
+    text-align: center;
+}
+
+/* Styling for paragraphs */
+p {
+    margin-bottom: 15px;
+    color: #5b5c5e;
+}
+
+/* Styling for form elements */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"], 
+input[type="number"], 
+input[type="date"], 
+input[type="time"], 
+select, button, textarea {
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100%;
+    background-color: #f9f9f9;
+}
+
+textarea{
+    max-width: 100%;
+}
+
+input[type="checkbox"] {
+    margin-left: 5px;
+}
+
+.checkbox-group {
+    margin-bottom: 20px;
+}
+
+input[type="text"], 
+input[type="number"], 
+input[type="date"], 
+input[type="time"], select, textarea {
+    background-color: #e9ecef;
+}
+
+button {
+    padding: 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    text-decoration: none !important;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.hidden1 {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.fade-in.visible {
+    opacity: 1;
+}
+
+.scale-up {
+    transform: scale(0.8);
+    transition: transform 0.6s;
+}
+
+.scale-up.visible {
+    transform: scale(1);
+}
+
+.rotate-in {
+    transform: rotate(-15deg);
+    transition: transform 0.7s;
+}
+
+.rotate-in.visible {
+    transform: rotate(0);
+}
+
+.rotate-out {
+    transform: rotate(+15deg);
+    transition: transform 0.8s;
+}
+
+.rotate-out.visible {
+    transform: rotate(0);
+}
+
+span {
+    margin-right: auto;
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background: #262a2e;
+    color: #f8f9fa;
+}
+
+body.dark-mode .container{
+    background: #495057;
+    color: #f8f9fa;
+}
+
+body.dark-mode .container2{
+    background: #495057;
+    color: #f8f9fa;
+}
+
+body.dark-mode h1, body.dark-mode label, body.dark-mode p {
+    color: #f8f9fa;
+}
+
+body.dark-mode input[type="text"], 
+body.dark-mode input[type="number"],
+input[type="date"], input[type="time"],
+body.dark-mode select,
+body.dark-mode textarea {
+    background-color: #6c757d;
+    border: 1px solid #495057;
+    color: #f8f9fa;
+}
+
+body.dark-mode button {
+    background-color: #28a745;
+}
+
+/* body.dark-mode a {
+    color: #f8f9fa;
+    background-color: #28a745;
+} */
+
+body.dark-mode a:hover {
+    background-color: #218838;
+}
+
+body.dark-mode button:hover {
+    background-color: #218838;
+}
+
+/* Styling for the dark mode toggle button */
+.toggle-dark-mode {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.toggle-dark-mode button {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 34px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-dark-mode button::before {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+body.dark-mode .toggle-dark-mode button {
+    background-color: #28a745;
+}
+
+body.dark-mode .toggle-dark-mode button::before {
+    transform: translateX(26px);
+}
+
+.toggle-dark-mode button:hover {
+    background-color: #0056b3;
+}
+
+body.dark-mode .toggle-dark-mode button:hover {
+    background-color: #218838;
+}
+
+/* Calendar styles */
+#calendar {
+    width: 100%; 
+    margin: 0 auto;
+    height: 800px;
+}
+
+#calendar .fc-event {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+}
+
+body.dark-mode #calendar .fc-event {
+    background-color: #28a745;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.button-container button {
+    padding: 10px 20px;
+    width: auto;
+    flex: 0 1 auto;
+}
+
+/* Add this to your styles.css file */
+footer {
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f1f1f1;
+}
+
+footer p {
+    margin: 0;
+}
+
+footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Dark mode footer styles */
+body.dark-mode footer {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+body.dark-mode footer a {
+    color: #f8f9fa;
+}
+
+
+
+/* styles */
+body.dark-mode .calendar{
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    color: #f8f9fa;
+}
+body.dark-mode .clock{
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    color: #f8f9fa;
+}
+
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.calendar, .clock {
+    position: absolute;
+    background: rgb(255, 255, 255);
+    border: 2px solid rgba(255, 255, 255, 0.315);
+    border-radius: 8px;
+    animation: float 10s infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(20, 20, 20, 0.767);
+    text-align: center;
+    font-size: 1em;
+}
+
+.calendar {
+    width: 60px;
+    height: 60px;
+    font-size: 14px;
+}
+
+.clock {
+    width: 80px;
+    height: 40px;
+    font-size: 12px;
+}
+
+@keyframes floatLeft {
+    0% {
+        transform: translateY(-100vh) translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(-100vw) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes floatRight {
+    0% {
+        transform: translateY(-100vh) translateX(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(100vw) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* Style for result paage */
+
+/* Additional styling for spacing and calendar size */
+.button-container {
+    margin-top: 20px;
+}
+.fc .fc-button {
+    margin-bottom: 10px;
+}
+.fc-daygrid-day-events {
+    white-space: normal !important;
+}
+
+.fc-daygrid-event-harness {
+    display: flex !important;
+    align-items: center;
+    justify-content: start;
+    width: 100% !important;
+}
+.fc-daygrid-event {
+    flex: 1 0 auto !important;
+}
+#leftover_time_message {
+    margin-top: 20px;
+    font-weight: bold;
+    color: rgb(255, 99, 71); /* Crimson Red */
+    font-size: large;
+}
+
